@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+    <title>Chat History</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chat-history {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .message {
+            margin: 10px 0;
+        }
+        .user-message {
+            color: blue;
+        }
+        .bot-message {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat History</h1>
+    <div class="chat-history">
+        {% for entry in history %}
+            <div class="message">
+                <div class="user-message">You: {{ entry.query }}</div>
+                <div class="bot-message">Bot: {{ entry.response }}</div>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

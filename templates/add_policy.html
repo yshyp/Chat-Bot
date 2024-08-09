@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+    <title>Add New Policy</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.3/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Add New Policy</h1>
+        <form action="/add_policy" method="post">
+            <div class="mb-3">
+                <input type="text" name="name" class="form-control" placeholder="Policy Name" required>
+            </div>
+            <div class="mb-3">
+                <textarea name="details" class="form-control" placeholder="Policy Details" required></textarea>
+            </div>
+            <input type="submit" class="btn btn-primary" value="Add Policy">
+        </form>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary mt-4">Back to Chat</a>
+    </div>
+    
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+</body>
+</html>

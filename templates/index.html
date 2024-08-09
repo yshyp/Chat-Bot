@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+    <title>Company Policy Bot</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.3/css/bootstrap.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="chatbot-widget">
+        <div class="chatbot-icon" onclick="toggleChat()">
+            <i class="fas fa-comment"></i>
+        </div>
+        <div class="chat-container" id="chat-container" style="display: none;">
+            <h1 class="mb-4">Company Policy Bot</h1>
+            <div class="chat-box" id="chat-box">
+                <!-- Existing chat history will be displayed here -->
+                <!-- This will be dynamically updated -->
+            </div>
+            <form id="chat-form" class="input-container">
+                <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+                <input type="text" id="query" name="query" class="form-control" placeholder="Enter your query" required>
+                <button type="submit" class="btn btn-primary">Get Policy</button>
+            </form>
+            <div id="history-container">
+                <button id="show-history" class="btn btn-secondary mt-2" onclick="toggleHistory()">Show Chat History</button>
+                <div id="history" class="hidden mt-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+    <script>
+        function toggleChat() {
+            var chatContainer = document.getElementById('chat-container');
+            if (chatContainer.style.display === 'none' || chatContainer.style.display === '') {
+                chatContainer.style.display = 'block';
+            } else {
+                chatContainer.style.display = 'none';
+            }
+        }
+
+        function keepChatVisible() {
+            // Ensure the chat window stays open
+            document.getElementById('chat-container').style.display = 'block';
+            return false; // Prevent form submission from refreshing the page
+        }
+
+        document.getElementById('chat-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    var email = document.getElementById('email').value;
+    var query = document.getElementById('query').value;
+
+    fetch('/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: email, query: query })
+    })
+    .then(response => {
+        if (!response.ok) {
+            // Handle HTTP errors
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Update chat box with the new query and response
+        var chatBox = document.getElementById('chat-box');
+        var userMessage = document.createElement('div');
+        userMessage.className = 'user-message';
+        userMessage.textContent = 'You: ' + data.query;
+        var botMessage = document.createElement('div');
+        botMessage.className = 'bot-message';
+        botMessage.textContent = 'Bot: ' + data.response;
+        chatBox.appendChild(userMessage);
+        chatBox.appendChild(botMessage);
+        chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the bottom
+
+        // Keep the chat window open
+        document.getElementById('chat-container').style.display = 'block';
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+    });
+});
+
+
+        function fetchHistory() {
+            var email = document.getElementById('email').value;
+            fetch(`/history/${email}`)
+                .then(response => response.json())
+                .then(data => {
+                    var historyDiv = document.getElementById('history');
+                    historyDiv.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        historyDiv.innerHTML = '<p>No chat history found for this email.</p>';
+                    } else {
+                        data.forEach(entry => {
+                            var queryDiv = document.createElement('div');
+                            queryDiv.classList.add('message');
+                            queryDiv.innerHTML = `<div class="user-message">You: ${entry.query}</div><div class="bot-message">Bot: ${entry.response}</div>`;
+                            historyDiv.appendChild(queryDiv);
+                        });
+                    }
+                    historyDiv.classList.remove('hidden');
+                    historyDiv.scrollTop = historyDiv.scrollHeight; // Auto-scroll to the bottom
+                });
+        }
+
+        function toggleHistory() {
+            var historyDiv = document.getElementById('history');
+            if (historyDiv.classList.contains('hidden')) {
+                fetchHistory();
+            } else {
+                historyDiv.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
